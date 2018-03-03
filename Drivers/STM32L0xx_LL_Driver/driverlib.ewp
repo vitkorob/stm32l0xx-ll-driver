@@ -151,6 +151,9 @@
       <name>$PROJ_DIR$\Source\stm32l0xx_ll_i2c.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\Source\stm32l0xx_ll_irq.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\Source\stm32l0xx_ll_lptim.c</name>
     </file>
     <file>
