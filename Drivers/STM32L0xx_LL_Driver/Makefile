@@ -1,14 +1,13 @@
 # Tools and options
-CC  = arm-none-eabi-gcc
-AR  = arm-none-eabi-ar
+PREFIX  = arm-none-eabi
+CC      = $(PREFIX)-gcc
+AR      = $(PREFIX)-ar
 
 # The flags passed to the compiler
 CFLAGS  = -mthumb \
         -mcpu=cortex-m0plus \
         -std=c99 \
-        -Wall \
-        -pedantic \
-        -c
+        -Wall
 
 # Paths
 INC_PATHS   = -IInclude \
@@ -18,11 +17,12 @@ LIB_PATHS   =
 SRC_PATH    = Source/
 OUT_PATH    = gcc/
 
+# Libs
+LIBS    = -lc
+
 # Definitions
 DEFS    = -DUSE_FULL_LL_DRIVER=1 \
-        -DUSE_FULL_ASSERT=1 \
-        -DSTM32L053xx \
-        -DDEBUG
+        -DSTM32L053xx
 
 OBJS    = $(OUT_PATH)stm32l0xx_ll_adc.o \
         $(OUT_PATH)stm32l0xx_ll_comp.o \
@@ -48,14 +48,29 @@ OBJS    = $(OUT_PATH)stm32l0xx_ll_adc.o \
 
 LIB = $(OUT_PATH)libdriver.a
 
-#The main all target
-all: $(LIB)
-.PHONY: all
+# The main Release target
+Release: CFLAGS += -O2
+Release: DEFS += -DNDEBUG
+Release: $(LIB)
+.PHONY: Release
 
-# Implicit rules
-$(OUT_PATH)%.o: $(SRC_PATH)%.c Makefile
-	$(CC) $(CFLAGS) $(INC_PATHS) $(DEFS) $(<) -o $(@)
+# The main Debug target
+Debug: CFLAGS += -g
+Debug: DEFS += -DUSE_FULL_ASSERT=1
+Debug: DEFS += -DDEBUG
+Debug: $(LIB)
+.PHONY: Debug
 
-# The libdriver.a
-$(OUT_PATH)%.a: $(OBJS)
-	${AR} -cr ${@} ${^}
+# The library depends
+$(LIB): $(OBJS) Makefile
+
+# Objects depend
+$(OBJS): Makefile
+
+# Implicit rule
+$(OUT_PATH)%.o: $(SRC_PATH)%.c
+	$(CC) -c $(CFLAGS) $(INC_PATHS) $(DEFS) $(<) -o $(@)
+
+# Implicit rule
+$(OUT_PATH)%.a:
+	$(AR) -cr $(@) $(filter %.o, $(^))
