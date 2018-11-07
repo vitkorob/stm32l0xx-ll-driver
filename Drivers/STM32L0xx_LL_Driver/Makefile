@@ -7,7 +7,9 @@ AR      = $(PREFIX)-ar
 CFLAGS  = -mthumb \
         -mcpu=cortex-m0plus \
         -std=c99 \
-        -Wall
+        -Wall \
+        -ffunction-sections \
+        -fdata-sections
 
 # Paths
 INC_PATHS   = -IInclude \
@@ -61,6 +63,11 @@ Debug: DEFS += -DDEBUG
 Debug: $(LIB)
 .PHONY: Debug
 
+# Clean target
+clean:
+	$(RM) $(LIB) $(OBJS)
+.PHONY: clean
+
 # The library depends
 $(LIB): $(OBJS) Makefile
 
@@ -73,4 +80,4 @@ $(OUT_PATH)%.o: $(SRC_PATH)%.c
 
 # Implicit rule
 $(OUT_PATH)%.a:
-	$(AR) -cr $(@) $(filter %.o, $(^))
+	$(AR) -crs $(@) $(filter %.o, $(^))

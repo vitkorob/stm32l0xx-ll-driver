@@ -73,7 +73,7 @@
   #pragma data_alignment=256
 static __no_init void (*Vectors[IRQ_TOTAL])(void) @ "VTABLE";
 #elif defined (__GNUC__)
-static __attribute__((section("vtable"))) void (*Vectors[IRQ_TOTAL])(void) __attribute__((aligned(256)));
+static __attribute__((section(".noinit"))) void (*Vectors[IRQ_TOTAL])(void) __attribute__((aligned(256)));
 #else
  #error "No implementation for this compiler"
 #endif
